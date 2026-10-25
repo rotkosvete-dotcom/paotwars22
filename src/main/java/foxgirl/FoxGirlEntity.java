@@ -62,8 +62,10 @@ public class FoxGirlEntity extends TamableAnimal {
 	private static final int TAIL_COOLDOWN = 50;
 	private static final int TAIL_ANIM_TICKS = 14;
 
-	/** 0 = маленькая, 1 = обычная, 2 = большая */
-	private static final float[] SCALES = {0.35f, 1.0f, 1.6f};
+	/** Обычный размер Фурритян = 1.6 от размера модели (хитбокс в FoxGirlMod задан уже под него). */
+	public static final float NORMAL_RENDER = 1.6f;
+	/** Множители ОТНОСИТЕЛЬНО обычного размера: 0 = маленькая, 1 = обычная, 2 = большая */
+	private static final float[] SCALES = {0.3f, 1.0f, 1.25f};
 	private static final EntityDataAccessor<Integer> SIZE_STATE =
 		SynchedEntityData.defineId(FoxGirlEntity.class, EntityDataSerializers.INT);
 	private static final UUID BIG_DAMAGE_ID = UUID.fromString("5b7f6a40-2d1c-4a77-9a50-0c4f0a1b9e11");
@@ -72,7 +74,7 @@ public class FoxGirlEntity extends TamableAnimal {
 	private int sizeHold = 0;      // сколько тиков держать размер, чтобы не дёргалась
 	private int tailCooldown = 0;
 	private int tailSwing = 0;     // для анимации (клиент)
-	private float renderScale = 1f;
+	private float renderScale = NORMAL_RENDER;
 	private boolean ready = false; // защита от вызова getDimensions внутри конструктора
 
 	public FoxGirlEntity(EntityType<? extends FoxGirlEntity> type, Level level) {
@@ -227,7 +229,7 @@ public class FoxGirlEntity extends TamableAnimal {
 		if (this.isTame() && this.hunger <= 0) return;
 
 		float s = this.getScaleFactor();
-		double reach = 2.6 * s + 0.6;
+		double reach = 3.3 * s + 0.6;
 		if (this.distanceToSqr(target) > reach * reach) return;
 
 		this.tailCooldown = TAIL_COOLDOWN;
@@ -309,7 +311,7 @@ public class FoxGirlEntity extends TamableAnimal {
 
 		if (this.level().isClientSide) {
 			if (this.tailSwing > 0) this.tailSwing--;
-			this.renderScale += (SCALES[this.getSizeState()] - this.renderScale) * 0.25f;
+			this.renderScale += (SCALES[this.getSizeState()] * NORMAL_RENDER - this.renderScale) * 0.25f;
 			return;
 		}
 
@@ -377,7 +379,7 @@ public class FoxGirlEntity extends TamableAnimal {
 		if (tag.contains("SizeState")) {
 			int s = Math.max(0, Math.min(2, tag.getInt("SizeState")));
 			this.entityData.set(SIZE_STATE, s);
-			this.renderScale = SCALES[s];
+			this.renderScale = SCALES[s] * NORMAL_RENDER;
 			this.refreshDimensions();
 		}
 	}

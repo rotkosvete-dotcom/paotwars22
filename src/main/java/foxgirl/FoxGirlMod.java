@@ -28,7 +28,7 @@ public class FoxGirlMod {
 
 	public static final RegistryObject<EntityType<FoxGirlEntity>> FOX_GIRL = ENTITIES.register("fox_girl",
 		() -> EntityType.Builder.of(FoxGirlEntity::new, MobCategory.CREATURE)
-			.sized(0.6f, 1.9f)
+			.sized(0.96f, 3.04f)
 			.clientTrackingRange(10)
 			.build("fox_girl"));
 
